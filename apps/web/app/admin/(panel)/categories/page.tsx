@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { AdminButton, Card, ErrorBox, FieldError, inputClass, Label, PageHeader, Spinner } from '@/components/admin/ui';
 import { AdminApiError, adminApi, useAdminData } from '@/lib/admin-api';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import type { Category } from '@/lib/types';
 
 interface FormState {
@@ -17,6 +18,7 @@ interface FormState {
 const EMPTY: FormState = { name: '', slug: '', description: '', sort: '0' };
 
 export default function CategoriesPage() {
+  const { t, msg } = useAdminI18n();
   const { data, error, loading, reload } = useAdminData<Category[]>('/admin/categories');
   const [editing, setEditing] = useState<Category | 'new' | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY);
@@ -59,23 +61,23 @@ export default function CategoriesPage() {
   };
 
   const remove = async (cat: Category) => {
-    if (!confirm(`Kategorie „${cat.name}“ löschen?`)) return;
+    if (!confirm(t.categories.confirmDelete(cat.name))) return;
     try {
       await adminApi.delete(`/admin/categories/${cat.id}`);
       await reload();
     } catch (err) {
-      alert((err as Error).message);
+      alert(msg((err as Error).message));
     }
   };
 
   return (
     <>
       <PageHeader
-        title="Kategorien"
-        subtitle="Gerätetypen für den Shop-Filter"
+        title={t.categories.title}
+        subtitle={t.categories.subtitle}
         actions={
           <AdminButton onClick={() => open('new')}>
-            <Plus className="size-4" /> Neue Kategorie
+            <Plus className="size-4" /> {t.categories.new}
           </AdminButton>
         }
       />
@@ -83,35 +85,35 @@ export default function CategoriesPage() {
       {editing && (
         <Card className="mb-6">
           <form onSubmit={submit} noValidate className="space-y-4">
-            <h2 className="font-bold text-ink">{editing === 'new' ? 'Neue Kategorie' : `„${editing.name}“ bearbeiten`}</h2>
+            <h2 className="font-bold text-ink">{editing === 'new' ? t.categories.new : t.common.editTitle(editing.name)}</h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <label className="block">
-                <Label required>Name</Label>
+                <Label required>{t.common.name}</Label>
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} autoFocus />
                 <FieldError message={errors.name} />
               </label>
               <label className="block">
-                <Label>Slug</Label>
-                <input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className={inputClass} placeholder="automatisch" />
+                <Label>{t.common.slug}</Label>
+                <input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className={inputClass} placeholder={t.common.automatic} />
                 <FieldError message={errors.slug} />
               </label>
               <label className="block">
-                <Label>Sortierung</Label>
+                <Label>{t.common.sort}</Label>
                 <input value={form.sort} onChange={(e) => setForm({ ...form, sort: e.target.value })} inputMode="numeric" className={inputClass} />
               </label>
             </div>
             <label className="block">
-              <Label>Beschreibung</Label>
+              <Label>{t.common.description}</Label>
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className={inputClass} />
               <FieldError message={errors.description} />
             </label>
             {formError && <ErrorBox message={formError} />}
             <div className="flex gap-2">
               <AdminButton type="submit" loading={saving}>
-                Speichern
+                {t.common.save}
               </AdminButton>
               <AdminButton type="button" variant="secondary" onClick={() => setEditing(null)}>
-                Abbrechen
+                {t.common.cancel}
               </AdminButton>
             </div>
           </form>
@@ -127,10 +129,10 @@ export default function CategoriesPage() {
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Kategorie</th>
-                  <th className="px-4 py-3">Slug</th>
-                  <th className="px-4 py-3 text-right">Produkte</th>
-                  <th className="px-4 py-3 text-right">Sort.</th>
+                  <th className="px-4 py-3">{t.categories.category}</th>
+                  <th className="px-4 py-3">{t.common.slug}</th>
+                  <th className="px-4 py-3 text-right">{t.common.products}</th>
+                  <th className="px-4 py-3 text-right">{t.common.sortShort}</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -146,10 +148,10 @@ export default function CategoriesPage() {
                     <td className="px-4 py-3 text-right text-slate-500">{c.sort}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
-                        <AdminButton variant="ghost" className="px-2" onClick={() => open(c)} aria-label="Bearbeiten">
+                        <AdminButton variant="ghost" className="px-2" onClick={() => open(c)} aria-label={t.common.edit}>
                           <Pencil className="size-4" />
                         </AdminButton>
-                        <AdminButton variant="ghost" className="px-2 text-red-600" onClick={() => remove(c)} aria-label="Löschen">
+                        <AdminButton variant="ghost" className="px-2 text-red-600" onClick={() => remove(c)} aria-label={t.common.delete}>
                           <Trash2 className="size-4" />
                         </AdminButton>
                       </div>

@@ -1,11 +1,12 @@
 'use client';
 
-import { ENERGY_CLASSES, productInputSchema, SYSTEM_TYPE_LABELS, SYSTEM_TYPES, type SystemType } from '@ic/shared';
+import { ENERGY_CLASSES, productInputSchema, SYSTEM_TYPES, type SystemType } from '@ic/shared';
 import { Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AdminApiError, adminApi, useAdminData } from '@/lib/admin-api';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import { adminProductHref, productHref } from '@/lib/paths';
 import type { Brand, Category, Product, ProductSpec } from '@/lib/types';
 import { ImageUpload } from './ImageUpload';
@@ -54,6 +55,7 @@ function initialState(p?: Product): FormState {
 
 export function ProductForm({ product, created = false }: { product?: Product; created?: boolean }) {
   const router = useRouter();
+  const { t } = useAdminI18n();
   const brands = useAdminData<Brand[]>('/admin/brands');
   const categories = useAdminData<Category[]>('/admin/categories');
   const [form, setForm] = useState<FormState>(() => initialState(product));
@@ -61,7 +63,7 @@ export function ProductForm({ product, created = false }: { product?: Product; c
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [notice, setNotice] = useState<string | null>(created ? 'Produkt angelegt.' : null);
+  const [notice, setNotice] = useState<'created' | 'saved' | null>(created ? 'created' : null);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setNotice(null);
@@ -91,7 +93,7 @@ export function ProductForm({ product, created = false }: { product?: Product; c
       const fieldErrors: Record<string, string> = {};
       for (const issue of parsed.error.issues) {
         const key = String(issue.path[0]);
-        fieldErrors[key] ??= key === 'specs' ? 'Bitte Bezeichnung und Wert ausfüllen' : issue.message;
+        fieldErrors[key] ??= key === 'specs' ? t.productForm.specsError : issue.message;
       }
       setErrors(fieldErrors);
       return;
@@ -102,7 +104,7 @@ export function ProductForm({ product, created = false }: { product?: Product; c
       if (product) {
         const updated = await adminApi.patch<Product>(`/admin/products/${product.id}`, parsed.data);
         setForm(initialState(updated));
-        setNotice('Gespeichert.');
+        setNotice('saved');
       } else {
         const created = await adminApi.post<Product>('/admin/products', parsed.data);
         router.replace(adminProductHref(created.id, { created: '1' }));
@@ -116,7 +118,7 @@ export function ProductForm({ product, created = false }: { product?: Product; c
   };
 
   const remove = async () => {
-    if (!product || !confirm(`„${product.title}“ endgültig löschen?`)) return;
+    if (!product || !confirm(t.productForm.confirmDelete(product.title))) return;
     setDeleting(true);
     try {
       await adminApi.delete(`/admin/products/${product.id}`);
@@ -132,46 +134,46 @@ export function ProductForm({ product, created = false }: { product?: Product; c
       <div className="space-y-6">
         <Card className="space-y-4">
           <label className="block">
-            <Label required>Titel</Label>
-            <input value={form.title} onChange={(e) => set('title', e.target.value)} className={inputClass} placeholder="z. B. Daikin Perfera Wandgerät 3,5 kW" />
+            <Label required>{t.productForm.title}</Label>
+            <input value={form.title} onChange={(e) => set('title', e.target.value)} className={inputClass} placeholder={t.productForm.titlePlaceholder} />
             <FieldError message={errors.title} />
           </label>
           <label className="block">
-            <Label>URL-Slug</Label>
-            <input value={form.slug} onChange={(e) => set('slug', e.target.value)} className={inputClass} placeholder="wird automatisch aus dem Titel erzeugt" />
+            <Label>{t.productForm.slug}</Label>
+            <input value={form.slug} onChange={(e) => set('slug', e.target.value)} className={inputClass} placeholder={t.productForm.slugPlaceholder} />
             <FieldError message={errors.slug} />
           </label>
           <label className="block">
-            <Label>Beschreibung</Label>
+            <Label>{t.common.description}</Label>
             <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={7} className={inputClass} />
             <FieldError message={errors.description} />
           </label>
         </Card>
 
         <Card>
-          <h2 className="mb-4 font-bold text-ink">Bilder</h2>
+          <h2 className="mb-4 font-bold text-ink">{t.productForm.images}</h2>
           <ImageUpload value={form.images} onChange={(images) => set('images', images)} />
           <FieldError message={errors.images} />
         </Card>
 
         <Card>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-bold text-ink">Technische Daten</h2>
+            <h2 className="font-bold text-ink">{t.productForm.specs}</h2>
             <AdminButton type="button" variant="secondary" onClick={() => set('specs', [...form.specs, { label: '', value: '' }])}>
-              <Plus className="size-4" /> Zeile
+              <Plus className="size-4" /> {t.productForm.addRow}
             </AdminButton>
           </div>
-          {form.specs.length === 0 && <p className="text-sm text-slate-500">Noch keine Angaben, z. B. „Kältemittel: R32“ oder „Schallpegel innen: 19 dB(A)“.</p>}
+          {form.specs.length === 0 && <p className="text-sm text-slate-500">{t.productForm.specsEmpty}</p>}
           <div className="space-y-2">
             {form.specs.map((s, i) => (
               <div key={i} className="flex gap-2">
-                <input value={s.label} onChange={(e) => setSpec(i, 'label', e.target.value)} placeholder="Bezeichnung" className={inputClass} aria-label="Bezeichnung" />
-                <input value={s.value} onChange={(e) => setSpec(i, 'value', e.target.value)} placeholder="Wert" className={inputClass} aria-label="Wert" />
+                <input value={s.label} onChange={(e) => setSpec(i, 'label', e.target.value)} placeholder={t.productForm.specLabel} className={inputClass} aria-label={t.productForm.specLabel} />
+                <input value={s.value} onChange={(e) => setSpec(i, 'value', e.target.value)} placeholder={t.productForm.specValue} className={inputClass} aria-label={t.productForm.specValue} />
                 <AdminButton
                   type="button"
                   variant="ghost"
                   onClick={() => set('specs', form.specs.filter((_, j) => j !== i))}
-                  aria-label="Zeile entfernen"
+                  aria-label={t.productForm.removeRow}
                   className="px-2"
                 >
                   <Trash2 className="size-4" />
@@ -186,16 +188,16 @@ export function ProductForm({ product, created = false }: { product?: Product; c
       <div className="space-y-6">
         <Card className="space-y-4">
           <label className="flex cursor-pointer items-center justify-between">
-            <span className="text-sm font-semibold text-ink">Im Shop sichtbar</span>
+            <span className="text-sm font-semibold text-ink">{t.productForm.visible}</span>
             <input type="checkbox" checked={form.active} onChange={(e) => set('active', e.target.checked)} className="size-5 accent-brand-500" />
           </label>
           <label className="block">
-            <Label>Preis ab (EUR, inkl. MwSt.)</Label>
-            <input value={form.priceFrom} onChange={(e) => set('priceFrom', e.target.value)} inputMode="numeric" className={inputClass} placeholder="leer = Preis auf Anfrage" />
+            <Label>{t.productForm.price}</Label>
+            <input value={form.priceFrom} onChange={(e) => set('priceFrom', e.target.value)} inputMode="numeric" className={inputClass} placeholder={t.productForm.pricePlaceholder} />
             <FieldError message={errors.priceFrom} />
           </label>
           <label className="block">
-            <Label>Sortierung</Label>
+            <Label>{t.common.sort}</Label>
             <input value={form.sort} onChange={(e) => set('sort', e.target.value)} inputMode="numeric" className={inputClass} />
             <FieldError message={errors.sort} />
           </label>
@@ -204,9 +206,9 @@ export function ProductForm({ product, created = false }: { product?: Product; c
         <Card className="space-y-4">
           {(brands.error || categories.error) && <ErrorBox message={brands.error ?? categories.error ?? ''} />}
           <label className="block">
-            <Label required>Marke</Label>
+            <Label required>{t.products.brand}</Label>
             <select value={form.brandId} onChange={(e) => set('brandId', e.target.value)} className={inputClass}>
-              <option value="">– bitte wählen –</option>
+              <option value="">{t.productForm.choose}</option>
               {brands.data?.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -216,9 +218,9 @@ export function ProductForm({ product, created = false }: { product?: Product; c
             <FieldError message={errors.brandId} />
           </label>
           <label className="block">
-            <Label required>Kategorie</Label>
+            <Label required>{t.products.category}</Label>
             <select value={form.categoryId} onChange={(e) => set('categoryId', e.target.value)} className={inputClass}>
-              <option value="">– bitte wählen –</option>
+              <option value="">{t.productForm.choose}</option>
               {categories.data?.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -228,11 +230,11 @@ export function ProductForm({ product, created = false }: { product?: Product; c
             <FieldError message={errors.categoryId} />
           </label>
           <label className="block">
-            <Label required>Systemtyp</Label>
+            <Label required>{t.productForm.systemType}</Label>
             <select value={form.systemType} onChange={(e) => set('systemType', e.target.value as SystemType)} className={inputClass}>
-              {SYSTEM_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {SYSTEM_TYPE_LABELS[t]}
+              {SYSTEM_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t.systemType[type]}
                 </option>
               ))}
             </select>
@@ -241,22 +243,22 @@ export function ProductForm({ product, created = false }: { product?: Product; c
 
         <Card className="grid grid-cols-2 gap-4">
           <label className="block">
-            <Label>Kühlleistung (kW)</Label>
+            <Label>{t.productForm.cooling}</Label>
             <input value={form.coolingKw} onChange={(e) => set('coolingKw', e.target.value)} inputMode="decimal" className={inputClass} />
             <FieldError message={errors.coolingKw} />
           </label>
           <label className="block">
-            <Label>Heizleistung (kW)</Label>
+            <Label>{t.productForm.heating}</Label>
             <input value={form.heatingKw} onChange={(e) => set('heatingKw', e.target.value)} inputMode="decimal" className={inputClass} />
             <FieldError message={errors.heatingKw} />
           </label>
           <label className="block">
-            <Label>Raumgröße bis (m²)</Label>
+            <Label>{t.productForm.area}</Label>
             <input value={form.areaM2} onChange={(e) => set('areaM2', e.target.value)} inputMode="numeric" className={inputClass} />
             <FieldError message={errors.areaM2} />
           </label>
           <label className="block">
-            <Label>Energieklasse</Label>
+            <Label>{t.productForm.energyClass}</Label>
             <select value={form.energyClass} onChange={(e) => set('energyClass', e.target.value)} className={inputClass}>
               <option value="">–</option>
               {ENERGY_CLASSES.map((c) => (
@@ -269,20 +271,20 @@ export function ProductForm({ product, created = false }: { product?: Product; c
         </Card>
 
         {formError && <ErrorBox message={formError} />}
-        {notice && !formError && <div className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700">{notice}</div>}
+        {notice && !formError && <div className="rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-700">{notice === 'created' ? t.productForm.created : t.productForm.saved}</div>}
         <div className="flex flex-wrap gap-2">
           <AdminButton type="submit" loading={saving} className="flex-1">
-            {product ? 'Änderungen speichern' : 'Produkt anlegen'}
+            {product ? t.productForm.saveChanges : t.productForm.create}
           </AdminButton>
           {product && (
             <Link href={productHref(product.slug)} target="_blank" className={adminButtonClass('secondary')}>
-              Ansehen
+              {t.productForm.view}
             </Link>
           )}
         </div>
         {product && (
           <AdminButton type="button" variant="ghost" onClick={remove} loading={deleting} className="w-full text-red-600 hover:bg-red-50">
-            <Trash2 className="size-4" /> Produkt löschen
+            <Trash2 className="size-4" /> {t.productForm.delete}
           </AdminButton>
         )}
       </div>

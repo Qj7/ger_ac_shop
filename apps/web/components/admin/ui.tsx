@@ -1,9 +1,10 @@
 'use client';
 
-import { LEAD_STATUS_LABELS, type LeadStatus } from '@ic/shared';
+import type { LeadStatus } from '@ic/shared';
 import clsx from 'clsx';
 import { Loader2 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
+import { useAdminI18n } from '@/lib/admin-i18n';
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
   return (
@@ -30,9 +31,10 @@ const STATUS_COLORS: Record<LeadStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: LeadStatus }) {
+  const { t } = useAdminI18n();
   return (
     <span className={clsx('inline-flex rounded-full px-2.5 py-1 text-xs font-semibold', STATUS_COLORS[status])}>
-      {LEAD_STATUS_LABELS[status]}
+      {t.leadStatus[status]}
     </span>
   );
 }
@@ -50,7 +52,8 @@ export const inputClass =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-ink outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-200 disabled:bg-slate-100';
 
 export function FieldError({ message }: { message?: string }) {
-  return message ? <p className="mt-1 text-xs font-medium text-red-600">{message}</p> : null;
+  const { msg } = useAdminI18n();
+  return message ? <p className="mt-1 text-xs font-medium text-red-600">{msg(message)}</p> : null;
 }
 
 type BtnVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -97,5 +100,6 @@ export function Spinner() {
 }
 
 export function ErrorBox({ message }: { message: string }) {
-  return <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{message}</div>;
+  const { msg } = useAdminI18n();
+  return <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{msg(message)}</div>;
 }

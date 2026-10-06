@@ -3,6 +3,7 @@
 import { ArrowLeft, ArrowRight, ImagePlus, Loader2, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { adminApi } from '@/lib/admin-api';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import { assetUrl } from '@/lib/paths';
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ImageUpload({ value, onChange, max = 20 }: Props) {
+  const { t, msg } = useAdminI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,17 +50,17 @@ export function ImageUpload({ value, onChange, max = 20 }: Props) {
           <div key={url} className="group relative aspect-square overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200">
             <img src={assetUrl(url)} alt="" className="size-full object-cover" />
             {i === 0 && max > 1 && (
-              <span className="absolute left-2 top-2 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">Titelbild</span>
+              <span className="absolute left-2 top-2 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">{t.upload.cover}</span>
             )}
             <div className="absolute inset-x-0 bottom-0 flex justify-between gap-1 bg-gradient-to-t from-black/60 p-2 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
               <div className="flex gap-1">
                 {i > 0 && (
-                  <button type="button" onClick={() => move(i, -1)} className="rounded-md bg-white/90 p-1 text-ink" aria-label="Nach links">
+                  <button type="button" onClick={() => move(i, -1)} className="rounded-md bg-white/90 p-1 text-ink" aria-label={t.upload.moveLeft}>
                     <ArrowLeft className="size-4" />
                   </button>
                 )}
                 {i < value.length - 1 && (
-                  <button type="button" onClick={() => move(i, 1)} className="rounded-md bg-white/90 p-1 text-ink" aria-label="Nach rechts">
+                  <button type="button" onClick={() => move(i, 1)} className="rounded-md bg-white/90 p-1 text-ink" aria-label={t.upload.moveRight}>
                     <ArrowRight className="size-4" />
                   </button>
                 )}
@@ -67,7 +69,7 @@ export function ImageUpload({ value, onChange, max = 20 }: Props) {
                 type="button"
                 onClick={() => onChange(value.filter((_, j) => j !== i))}
                 className="rounded-md bg-red-600 p-1 text-white"
-                aria-label="Bild entfernen"
+                aria-label={t.upload.remove}
               >
                 <X className="size-4" />
               </button>
@@ -82,7 +84,7 @@ export function ImageUpload({ value, onChange, max = 20 }: Props) {
             className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 text-sm font-semibold text-slate-500 transition hover:border-brand-400 hover:text-brand-600"
           >
             {uploading ? <Loader2 className="size-6 animate-spin" /> : <ImagePlus className="size-6" />}
-            {uploading ? 'Lädt hoch …' : 'Bild hochladen'}
+            {uploading ? t.upload.uploading : t.upload.upload}
           </button>
         )}
       </div>
@@ -94,8 +96,8 @@ export function ImageUpload({ value, onChange, max = 20 }: Props) {
         className="hidden"
         onChange={(e) => upload(e.target.files)}
       />
-      {error && <p className="mt-2 text-xs font-medium text-red-600">{error}</p>}
-      <p className="mt-2 text-xs text-slate-500">JPG, PNG, WebP oder AVIF, max. 8 MB. Bilder werden automatisch optimiert.</p>
+      {error && <p className="mt-2 text-xs font-medium text-red-600">{msg(error)}</p>}
+      <p className="mt-2 text-xs text-slate-500">{t.upload.hint}</p>
     </div>
   );
 }

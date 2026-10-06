@@ -6,15 +6,17 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { adminApi } from '@/lib/admin-api';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import { apiFetch } from '@/lib/client-api';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { Spinner } from './ui';
 
-const NAV = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/admin/leads', label: 'Anfragen', icon: Inbox },
-  { href: '/admin/products', label: 'Produkte', icon: Package },
-  { href: '/admin/brands', label: 'Marken', icon: Tags },
-  { href: '/admin/categories', label: 'Kategorien', icon: FolderTree },
+const NAV: { href: string; key: 'dashboard' | 'leads' | 'products' | 'brands' | 'categories'; icon: typeof Inbox; exact?: boolean }[] = [
+  { href: '/admin', key: 'dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/admin/leads', key: 'leads', icon: Inbox },
+  { href: '/admin/products', key: 'products', icon: Package },
+  { href: '/admin/brands', key: 'brands', icon: Tags },
+  { href: '/admin/categories', key: 'categories', icon: FolderTree },
 ];
 
 interface Me {
@@ -26,6 +28,7 @@ interface Me {
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { locale, t } = useAdminI18n();
   const [me, setMe] = useState<Me | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -51,7 +54,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <p className="text-lg font-extrabold text-white">IC Klima</p>
         <p className="text-xs uppercase tracking-[0.3em] text-brand-300">Admin</p>
       </div>
-      {NAV.map(({ href, label, icon: Icon, exact }) => (
+      {NAV.map(({ href, key, icon: Icon, exact }) => (
         <Link
           key={href}
           href={href}
@@ -60,19 +63,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             isActive(href, exact) ? 'bg-white/15 text-white' : 'text-brand-100 hover:bg-white/10 hover:text-white',
           )}
         >
-          <Icon className="size-5" /> {label}
+          <Icon className="size-5" /> {t.shell[key]}
         </Link>
       ))}
       <div className="mt-auto space-y-1 border-t border-white/10 pt-4">
+        <LanguageSwitcher tone="dark" up />
         <Link href="/" target="_blank" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-100 hover:bg-white/10">
-          <ExternalLink className="size-5" /> Website öffnen
+          <ExternalLink className="size-5" /> {t.shell.openWebsite}
         </Link>
         <button
           type="button"
           onClick={logout}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-100 hover:bg-white/10"
         >
-          <LogOut className="size-5" /> Abmelden
+          <LogOut className="size-5" /> {t.shell.logout}
         </button>
         <p className="truncate px-3 pt-2 text-xs text-brand-300">{me.email}</p>
       </div>
@@ -80,21 +84,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen lg:pl-64">
+    <div lang={locale} className="min-h-screen lg:pl-64">
       <aside className="fixed inset-y-0 left-0 hidden w-64 bg-brand-950 lg:block">{sidebar}</aside>
 
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between bg-brand-950 px-4 text-white lg:hidden">
-        <span className="font-extrabold">IC Klima Admin</span>
-        <button type="button" onClick={() => setMenuOpen(true)} aria-label="Menü öffnen">
-          <Menu className="size-6" />
-        </button>
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 bg-brand-950 px-4 text-white lg:hidden">
+        <span className="font-extrabold">{t.shell.mobileTitle}</span>
+        <div className="flex items-center gap-1">
+          <LanguageSwitcher tone="dark" compact />
+          <button type="button" onClick={() => setMenuOpen(true)} aria-label={t.shell.openMenu} className="p-1">
+            <Menu className="size-6" />
+          </button>
+        </div>
       </header>
 
       {menuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/50" onClick={() => setMenuOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-64 bg-brand-950">
-            <button type="button" onClick={() => setMenuOpen(false)} className="absolute right-3 top-3 text-white" aria-label="Menü schließen">
+            <button type="button" onClick={() => setMenuOpen(false)} className="absolute right-3 top-3 text-white" aria-label={t.shell.closeMenu}>
               <X className="size-6" />
             </button>
             {sidebar}

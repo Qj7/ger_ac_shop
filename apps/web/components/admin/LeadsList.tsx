@@ -1,13 +1,13 @@
 'use client';
 
-import { LEAD_STATUS_LABELS, LEAD_STATUSES, LEAD_TYPE_LABELS, LEAD_TYPES } from '@ic/shared';
+import { LEAD_STATUSES, LEAD_TYPES } from '@ic/shared';
 import { ChevronLeft, ChevronRight, Download, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { adminDownload, useAdminData } from '@/lib/admin-api';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import { DEMO } from '@/lib/env';
-import { formatDateTime } from '@/lib/format';
 import { adminLeadHref } from '@/lib/paths';
 import type { Lead, Paginated } from '@/lib/types';
 import { AdminButton, adminButtonClass, Card, ErrorBox, inputClass, PageHeader, Spinner, StatusBadge } from './ui';
@@ -18,6 +18,7 @@ export function LeadsList() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+  const { t, dateTime } = useAdminI18n();
   const [q, setQ] = useState(params.get('q') ?? '');
 
   const query = new URLSearchParams();
@@ -37,10 +38,10 @@ export function LeadsList() {
   };
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (q !== (params.get('q') ?? '')) setParam('q', q);
     }, 400);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [q]);
 
   const exportParams = new URLSearchParams(qs);
@@ -50,8 +51,8 @@ export function LeadsList() {
   return (
     <>
       <PageHeader
-        title="Anfragen"
-        subtitle={data ? `${data.total} Anfragen` : undefined}
+        title={t.leads.title}
+        subtitle={data ? t.leads.count(data.total) : undefined}
         actions={
           <a
             href={`/api/admin/leads/export.csv?${exportParams}`}
@@ -65,7 +66,7 @@ export function LeadsList() {
             }
             className={adminButtonClass('secondary')}
           >
-            <Download className="size-4" /> CSV-Export
+            <Download className="size-4" /> {t.leads.exportCsv}
           </a>
         }
       />
@@ -73,27 +74,27 @@ export function LeadsList() {
       <Card className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="relative lg:col-span-2">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, E-Mail, Telefon, PLZ …" className={`${inputClass} pl-9`} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.leads.searchPlaceholder} className={`${inputClass} pl-9`} />
         </div>
-        <select value={params.get('status') ?? ''} onChange={(e) => setParam('status', e.target.value)} className={inputClass} aria-label="Status">
-          <option value="">Alle Status</option>
+        <select value={params.get('status') ?? ''} onChange={(e) => setParam('status', e.target.value)} className={inputClass} aria-label={t.common.status}>
+          <option value="">{t.leads.allStatuses}</option>
           {LEAD_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {LEAD_STATUS_LABELS[s]}
+              {t.leadStatus[s]}
             </option>
           ))}
         </select>
-        <select value={params.get('type') ?? ''} onChange={(e) => setParam('type', e.target.value)} className={inputClass} aria-label="Art">
-          <option value="">Alle Arten</option>
-          {LEAD_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {LEAD_TYPE_LABELS[t]}
+        <select value={params.get('type') ?? ''} onChange={(e) => setParam('type', e.target.value)} className={inputClass} aria-label={t.leads.type}>
+          <option value="">{t.leads.allTypes}</option>
+          {LEAD_TYPES.map((type) => (
+            <option key={type} value={type}>
+              {t.leadType[type]}
             </option>
           ))}
         </select>
         <div className="flex gap-2">
-          <input type="date" value={params.get('from') ?? ''} onChange={(e) => setParam('from', e.target.value)} className={inputClass} aria-label="Von" />
-          <input type="date" value={params.get('to') ?? ''} onChange={(e) => setParam('to', e.target.value)} className={inputClass} aria-label="Bis" />
+          <input type="date" value={params.get('from') ?? ''} onChange={(e) => setParam('from', e.target.value)} className={inputClass} aria-label={t.leads.from} />
+          <input type="date" value={params.get('to') ?? ''} onChange={(e) => setParam('to', e.target.value)} className={inputClass} aria-label={t.leads.to} />
         </div>
       </Card>
 
@@ -106,19 +107,19 @@ export function LeadsList() {
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Datum</th>
-                  <th className="px-4 py-3">Art</th>
-                  <th className="px-4 py-3">Kontakt</th>
-                  <th className="px-4 py-3">Telefon</th>
-                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">{t.leads.date}</th>
+                  <th className="px-4 py-3">{t.leads.type}</th>
+                  <th className="px-4 py-3">{t.leads.contact}</th>
+                  <th className="px-4 py-3">{t.leads.phone}</th>
+                  <th className="px-4 py-3">{t.common.status}</th>
                 </tr>
               </thead>
               <tbody className={`divide-y divide-slate-100 ${loading ? 'opacity-60' : ''}`}>
                 {data.items.map((l) => (
                   <tr key={l.id} className="cursor-pointer hover:bg-slate-50" onClick={() => router.push(adminLeadHref(l.id))}>
-                    <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatDateTime(l.createdAt)}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-slate-600">{dateTime(l.createdAt)}</td>
                     <td className="px-4 py-3">
-                      {LEAD_TYPE_LABELS[l.type]}
+                      {t.leadType[l.type]}
                       {l.product && <span className="block text-xs text-slate-500">{l.product.title}</span>}
                     </td>
                     <td className="px-4 py-3">
@@ -136,7 +137,7 @@ export function LeadsList() {
                 {data.items.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-10 text-center text-slate-500">
-                      Keine Anfragen gefunden.
+                      {t.leads.empty}
                     </td>
                   </tr>
                 )}
@@ -148,13 +149,11 @@ export function LeadsList() {
 
       {data && pageCount > 1 && (
         <div className="mt-4 flex items-center justify-end gap-3 text-sm">
-          <AdminButton variant="secondary" disabled={data.page <= 1} onClick={() => setParam('page', String(data.page - 1))} aria-label="Vorherige Seite">
+          <AdminButton variant="secondary" disabled={data.page <= 1} onClick={() => setParam('page', String(data.page - 1))} aria-label={t.leads.prevPage}>
             <ChevronLeft className="size-4" />
           </AdminButton>
-          <span className="text-slate-600">
-            Seite {data.page} von {pageCount}
-          </span>
-          <AdminButton variant="secondary" disabled={data.page >= pageCount} onClick={() => setParam('page', String(data.page + 1))} aria-label="Nächste Seite">
+          <span className="text-slate-600">{t.leads.pageOf(data.page, pageCount)}</span>
+          <AdminButton variant="secondary" disabled={data.page >= pageCount} onClick={() => setParam('page', String(data.page + 1))} aria-label={t.leads.nextPage}>
             <ChevronRight className="size-4" />
           </AdminButton>
         </div>

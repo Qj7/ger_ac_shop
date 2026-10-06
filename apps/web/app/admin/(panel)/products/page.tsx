@@ -4,21 +4,22 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { adminButtonClass, Card, ErrorBox, PageHeader, Spinner } from '@/components/admin/ui';
 import { useAdminData } from '@/lib/admin-api';
-import { formatPrice } from '@/lib/format';
+import { useAdminI18n } from '@/lib/admin-i18n';
 import { adminProductHref, assetUrl } from '@/lib/paths';
 import type { Paginated, Product } from '@/lib/types';
 
 export default function ProductsPage() {
+  const { t, price } = useAdminI18n();
   const { data, error, loading } = useAdminData<Paginated<Product>>('/admin/products?limit=100');
 
   return (
     <>
       <PageHeader
-        title="Produkte"
-        subtitle={data ? `${data.total} Produkte` : undefined}
+        title={t.products.title}
+        subtitle={data ? t.products.count(data.total) : undefined}
         actions={
           <Link href="/admin/products/new" className={adminButtonClass()}>
-            <Plus className="size-4" /> Neues Produkt
+            <Plus className="size-4" /> {t.products.new}
           </Link>
         }
       />
@@ -31,11 +32,11 @@ export default function ProductsPage() {
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Produkt</th>
-                  <th className="px-4 py-3">Marke</th>
-                  <th className="px-4 py-3">Kategorie</th>
-                  <th className="px-4 py-3 text-right">Preis ab</th>
-                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">{t.products.product}</th>
+                  <th className="px-4 py-3">{t.products.brand}</th>
+                  <th className="px-4 py-3">{t.products.category}</th>
+                  <th className="px-4 py-3 text-right">{t.products.priceFrom}</th>
+                  <th className="px-4 py-3">{t.common.status}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -51,12 +52,12 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-4 py-3 text-slate-600">{p.brand.name}</td>
                     <td className="px-4 py-3 text-slate-600">{p.category.name}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-ink">{p.priceFrom != null ? formatPrice(p.priceFrom) : '—'}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-ink">{p.priceFrom != null ? price(p.priceFrom) : '—'}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${p.active ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600'}`}
                       >
-                        {p.active ? 'Aktiv' : 'Inaktiv'}
+                        {p.active ? t.common.active : t.common.inactive}
                       </span>
                     </td>
                   </tr>
@@ -64,7 +65,7 @@ export default function ProductsPage() {
                 {data.items.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-10 text-center text-slate-500">
-                      Noch keine Produkte angelegt.
+                      {t.products.empty}
                     </td>
                   </tr>
                 )}
