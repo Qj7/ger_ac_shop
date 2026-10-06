@@ -1,0 +1,51 @@
+# Static demo of the website on GitHub Pages (https://<owner>.github.io/<repo>/).
+# The NestJS API and PostgreSQL do not run there: the demo build (NEXT_PUBLIC_DEMO=1) replaces the API
+# with an in-browser implementation on localStorage, seeded with the same catalog as `pnpm db:seed`.
+
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --filter "@ic/web..."
+
+      - name: Build static demo
+        run: pnpm --filter @ic/shared build && pnpm --filter @ic/web build:demo
+        env:
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: apps/web/out
+          publish_branch: gh-pages

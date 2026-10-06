@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #dbe7ff;
+  --color-brand-200: #bdd3ff;
+  --color-brand-300: #8fb5ff;
+  --color-brand-400: #5a8dfb;
+  --color-brand-500: #2f6fed;
+  --color-brand-600: #1f56d4;
+  --color-brand-700: #1b45ab;
+  --color-brand-800: #1c3c88;
+  --color-brand-900: #1c356c;
+  --color-brand-950: #142247;
+  --color-sky-accent: #4fa8ff;
+  --color-ink: #1f2937;
+
+  --shadow-card: 0 12px 32px -14px rgb(15 23 42 / 0.22);
+  --shadow-option: 0 6px 18px -8px rgb(15 23 42 / 0.25);
+
+  --animate-fade-in: fade-in 0.35s ease-out both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-ink antialiased;
+}
+
+/* react-phone-number-input */
+.PhoneInput {
+  @apply flex w-full items-center gap-2;
+}
+.PhoneInputInput {
+  @apply min-w-0 flex-1 bg-transparent outline-none;
+}
+.PhoneInputCountry {
+  @apply flex items-center;
+}

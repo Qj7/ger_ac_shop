@@ -1,0 +1,110 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadType {
+  QUIZ
+  HEAT_PUMP
+  SERVICE
+  PRODUCT
+  CONTACT
+}
+
+enum LeadStatus {
+  NEW
+  IN_PROGRESS
+  OFFER_SENT
+  WON
+  LOST
+}
+
+enum SystemType {
+  SINGLE
+  MULTI
+  MONOBLOCK
+  SPLIT
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+}
+
+model Lead {
+  id         String     @id @default(cuid())
+  type       LeadType
+  status     LeadStatus @default(NEW)
+  salutation String?
+  company    String?
+  name       String?
+  email      String
+  phone      String?
+  zip        String?
+  message    String?
+  answers    Json       @default("{}")
+  source     Json       @default("{}")
+  notes      String?
+  productId  String?
+  product    Product?   @relation(fields: [productId], references: [id], onDelete: SetNull)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  logoUrl  String?
+  sort     Int       @default(0)
+  active   Boolean   @default(true)
+  products Product[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sort        Int       @default(0)
+  products    Product[]
+}
+
+model Product {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  brandId     String
+  brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  systemType  SystemType @default(SINGLE)
+  coolingKw   Float?
+  heatingKw   Float?
+  areaM2      Int?
+  energyClass String?
+  /// Price "ab" in whole EUR
+  priceFrom   Int?
+  description String     @default("")
+  specs       Json       @default("[]")
+  images      String[]   @default([])
+  active      Boolean    @default(true)
+  sort        Int        @default(0)
+  leads       Lead[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([active, sort])
+}
