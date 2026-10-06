@@ -1,0 +1,3 @@
+:HL["/ger_ac_shop/_next/static/chunks/174opt632d4p6.css","style"]
+:HL["/ger_ac_shop/_next/static/media/e8f2fbee2754df70-s.p.1dqa_6e_ad4sj.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+0:{"tree":{"name":"","param":null,"prefetchHints":4112,"slots":{"children":{"name":"(site)","param":null,"prefetchHints":4096,"slots":{"children":{"name":"impressum","param":null,"prefetchHints":4160,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}}}},"staleTime":300,"buildId":"vfiw_qgQSsIdp1734UPFf"}

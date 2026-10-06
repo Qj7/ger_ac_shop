@@ -1,0 +1,26 @@
+1:"$Sreact.fragment"
+2:I[68752,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js"],"ClientPageRoot"]
+3:I[53560,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js","/ger_ac_shop/_next/static/chunks/1i6_p2581c74j.js","/ger_ac_shop/_next/static/chunks/1zckcrbd1xf6i.js"],"default"]
+6:I[55652,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js"],"OutletBoundary"]
+7:"$Sreact.suspense"
+b:I[55652,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js"],"ViewportBoundary"]
+c:I[55652,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js"],"MetadataBoundary"]
+e:I[25672,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js"],"default"]
+f:I[89846,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js"],"default"]
+12:I[61681,["/ger_ac_shop/_next/static/chunks/3vnterw7-jcir.js","/ger_ac_shop/_next/static/chunks/0sqxajpz-m09s.js","/ger_ac_shop/_next/static/chunks/1i6_p2581c74j.js"],"AdminShell"]
+a:X
+11:X
+11:C
+0:{"buildId":"vfiw_qgQSsIdp1734UPFf","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/ger_ac_shop/_next/static/chunks/1zckcrbd1xf6i.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$Lb",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#2f6fed"}]]}],["$","div",null,{"hidden":true,"children":["$","$Lc",null,{"children":["$","$7",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Admin | IC Klima Service"}],["$","meta","1",{"name":"description","content":"Moderne Klimatechnik für angenehmes Raumklima – Beratung, Verkauf, Montage und Service für Klimaanlagen und Wärmepumpen. Jetzt kostenloses Angebot anfragen."}],["$","meta","2",{"name":"robots","content":"noindex, nofollow"}],["$","meta","3",{"property":"og:title","content":"Admin | IC Klima Service"}],["$","meta","4",{"property":"og:description","content":"Moderne Klimatechnik für angenehmes Raumklima – Beratung, Verkauf, Montage und Service für Klimaanlagen und Wärmepumpen. Jetzt kostenloses Angebot anfragen."}],["$","meta","5",{"property":"og:site_name","content":"IC Klima Service"}],["$","meta","6",{"property":"og:locale","content":"de_DE"}],["$","meta","7",{"property":"og:type","content":"website"}],["$","meta","8",{"name":"twitter:card","content":"summary"}],["$","meta","9",{"name":"twitter:title","content":"Admin | IC Klima Service"}],["$","meta","10",{"name":"twitter:description","content":"Moderne Klimatechnik für angenehmes Raumklima – Beratung, Verkauf, Montage und Service für Klimaanlagen und Wärmepumpen. Jetzt kostenloses Angebot anfragen."}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"isPartial":"$@d","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]]}],"isPartial":"$@10","staleTime":"$a","varyParams":"$11"},{"rsc":["$","$1","c",{"children":[[["$","script","script-0",{"src":"/ger_ac_shop/_next/static/chunks/1i6_p2581c74j.js","async":true}]],["$","$L12",null,{"children":["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]}]]}],"isPartial":"$@13","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","div",null,{"className":"min-h-screen bg-slate-50","children":["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]}]]}],"isPartial":"$@14","staleTime":"$a","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@15","rootVaryParams":null,"needsRuntimeRequest":"$@16"}
+4:{}
+5:"$0:data:0:rsc:props:children:0:props:serverProvidedParams:params"
+8:null
+16:true
+a:300
+a:C
+15:0
+d:"$undefined"
+10:"$undefined"
+13:"$undefined"
+14:"$undefined"
+9:"$undefined"

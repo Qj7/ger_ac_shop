@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://Qj7.github.io/ger_ac_shop/sitemap.xml
