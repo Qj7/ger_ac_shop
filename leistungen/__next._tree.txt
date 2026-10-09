@@ -1,3 +1,3 @@
 :HL["/ger_ac_shop/_next/static/chunks/0si0h-d85oi5y.css","style"]
 :HL["/ger_ac_shop/_next/static/media/e8f2fbee2754df70-s.p.1dqa_6e_ad4sj.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-0:{"tree":{"name":"","param":null,"prefetchHints":4112,"slots":{"children":{"name":"(site)","param":null,"prefetchHints":4096,"slots":{"children":{"name":"leistungen","param":null,"prefetchHints":4160,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}}}},"staleTime":300,"buildId":"eUtFx46b5jgKU3-tXoOqS"}
+0:{"tree":{"name":"","param":null,"prefetchHints":4112,"slots":{"children":{"name":"(site)","param":null,"prefetchHints":4096,"slots":{"children":{"name":"leistungen","param":null,"prefetchHints":4160,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}}}},"staleTime":300,"buildId":"WZJ4_3tr3HF-4TbBUfpsK"}
