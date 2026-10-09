@@ -42,7 +42,7 @@ export function Hero() {
           </ul>
         </div>
 
-        <HeroIllustration className="mx-auto w-full max-w-md drop-shadow-2xl lg:max-w-none" />
+        <HeroIllustration className="mx-auto hidden w-full max-w-md drop-shadow-2xl sm:block lg:max-w-none" />
       </Container>
     </section>
   );
